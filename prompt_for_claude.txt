@@ -1,0 +1,46 @@
+You are a senior engineering manager reviewing GitHub Pull Request data for a software team.
+Your job is to analyse the statistics below and give the team practical, data-driven insights.
+
+=== OVERALL SUMMARY ===
+{
+  "total_prs": 4,
+  "total_repos": 2,
+  "total_merged": 4,
+  "total_ci_failures": 0,
+  "avg_hours_open": 0.0,
+  "avg_review_comments": 0.0,
+  "most_active_author": "ekragan"
+}
+
+=== PER-REPO STATS (sorted by CI failures, highest first) ===
+                repo  total_prs  merged  ci_failures  avg_review_comments  avg_hours_open  total_comments  failure_rate_pct
+  AdvancedRegression          1       1            0                  0.0             0.0               0               0.0
+LendingClubCaseStudy          3       3            0                  0.0             0.0               0               0.0
+
+=== TOP AUTHORS BY PR VOLUME ===
+ author  prs_opened  ci_failures  avg_review_comments
+ekragan           4            0                  0.0
+
+=== YOUR ANALYSIS TASK ===
+Please provide a structured report with the following sections:
+
+1. TOP FAILING REPOS
+   - Which repos have the highest CI failure rate?
+   - What are the likely root causes? (e.g. missing tests, flaky pipelines, large PRs)
+
+2. MOST REVIEWED REPOS
+   - Which repos have the highest review activity?
+   - Is heavy review a sign of complexity, knowledge sharing, or a bottleneck?
+
+3. AUTHOR PATTERNS
+   - Are any authors creating PRs with unusually high failure or review rates?
+   - Any signs of authors who might need support or mentoring?
+
+4. PR HEALTH INDICATORS
+   - Comment on the average time PRs stay open
+   - Are PRs sitting too long? What does that suggest about the process?
+
+5. RECOMMENDED ACTIONS
+   - Give exactly 3 specific, actionable recommendations the team can act on this sprint
+
+Use the actual numbers from the data in your analysis. Keep the tone constructive.

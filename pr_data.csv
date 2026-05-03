@@ -1,0 +1,5 @@
+repo,pr_number,title,author,state,is_merged,created_at,closed_at,hours_open,review_comments,total_comments,commits,changed_files,additions,deletions,reviewers,ci_status,ci_checks_passed,ci_checks_failed,url
+AdvancedRegression,1,adding mroe comments,ekragan,closed,True,2026-01-18,2026-01-18,0.0,0,0,1,1,225,114,,no_checks,0,0,https://github.com/ekragan/AdvancedRegression/pull/1
+LendingClubCaseStudy,3,Uploading the presentation,ekragan,closed,True,2025-10-07,2025-10-07,0.0,0,0,1,1,0,0,,no_checks,0,0,https://github.com/ekragan/LendingClubCaseStudy/pull/3
+LendingClubCaseStudy,2,Updating the chart descriptions,ekragan,closed,True,2025-10-07,2025-10-07,0.0,0,0,1,1,47,45,,no_checks,0,0,https://github.com/ekragan/LendingClubCaseStudy/pull/2
+LendingClubCaseStudy,1,Adding new pynb file as per jupyter notebook,ekragan,closed,True,2025-10-06,2025-10-06,0.0,0,0,1,1,769,110,,no_checks,0,0,https://github.com/ekragan/LendingClubCaseStudy/pull/1
