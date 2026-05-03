@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GithubAIPOC — GenAI Learning Primer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Fraunces:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:        #080b0f;
+      --bg2:       #0e1318;
+      --bg3:       #141c24;
+      --border:    #1e2d3d;
+      --accent:    #00d4aa;
+      --accent2:   #0099ff;
+      --accent3:   #ff6b35;
+      --text:      #cdd9e5;
+      --muted:     #546e7a;
+      --heading:   #ffffff;
+      --tag-bg:    #0a1f2e;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── GRID BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,170,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,170,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 56px;
+      background: rgba(8,11,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      color: var(--accent);
+      font-style: italic;
+      letter-spacing: -0.3px;
+    }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 140px 0 80px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-tag {
+      display: inline-block;
+      background: var(--tag-bg);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 700;
+      color: var(--heading);
+      line-height: 1.1;
+      letter-spacing: -1px;
+      margin-bottom: 1.2rem;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero-sub {
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.8;
+      animation: fadeUp 0.6s 0.2s ease both;
+      margin-bottom: 2rem;
+    }
+    .hero-badges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+    .badge {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12px;
+      padding: 5px 14px;
+      border-radius: 2px;
+    }
+    .badge.hi { border-color: var(--accent2); color: var(--accent2); background: #040f1a; }
+
+    /* ── WHAT YOU BUILD ── */
+    .section { padding: 72px 0; border-bottom: 1px solid var(--border); }
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .section h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--heading);
+      letter-spacing: -0.5px;
+      margin-bottom: 1rem;
+    }
+    .section p { color: var(--muted); max-width: 620px; margin-bottom: 2rem; }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 2rem 0;
+    }
+    .flow-step {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 1.2rem;
+      align-items: start;
+      opacity: 0;
+      transform: translateX(-16px);
+      transition: all 0.5s ease;
+    }
+    .flow-step.visible { opacity: 1; transform: translateX(0); }
+
+    .flow-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .step-num {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--accent);
+      background: var(--tag-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .step-line {
+      width: 1px;
+      flex: 1;
+      min-height: 40px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      opacity: 0.3;
+      margin-top: 6px;
+    }
+    .flow-step:last-child .step-line { display: none; }
+
+    .step-body { padding: 4px 0 2rem; }
+    .step-file {
+      display: inline-block;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--accent2);
+      font-size: 12px;
+      padding: 2px 10px;
+      border-radius: 2px;
+      margin-bottom: 8px;
+    }
+    .step-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      color: var(--heading);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .step-desc { color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .step-learns {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .learn-tag {
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 2px;
+    }
+
+    /* ── CONCEPTS ── */
+    .concepts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 2rem;
+    }
+    .concept-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.2rem;
+      transition: border-color 0.2s, transform 0.2s;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.2s;
+    }
+    .concept-card.visible { opacity: 1; transform: translateY(0); }
+    .concept-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .concept-icon { font-size: 1.4rem; margin-bottom: 10px; }
+    .concept-title { color: var(--heading); font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+    .concept-desc { color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+    /* ── CODE BLOCK ── */
+    .code-block {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+    }
+    .code-block pre {
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+    .code-block .c  { color: var(--muted); font-style: italic; }   /* comment */
+    .code-block .k  { color: var(--accent2); }                       /* keyword */
+    .code-block .s  { color: var(--accent); }                        /* string */
+    .code-block .n  { color: var(--accent3); }                       /* number/name */
+
+    /* ── REQUIREMENTS ── */
+    .req-list { list-style: none; margin-top: 1.5rem; }
+    .req-list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      font-size: 13px;
+    }
+    .req-list li:last-child { border-bottom: none; }
+    .req-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+    .req-cmd {
+      margin-left: auto;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      color: var(--accent2);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 2px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 3rem 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      position: relative;
+      z-index: 1;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── TERMINAL BLINK ── */
+    .blink {
+      display: inline-block;
+      width: 8px; height: 14px;
+      background: var(--accent);
+      vertical-align: middle;
+      margin-left: 4px;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <span class="nav-logo">GithubAIPOC</span>
+    <div class="nav-links">
+      <a href="#what-you-build">Scripts</a>
+      <a href="#concepts">Concepts</a>
+      <a href="#quickstart">Quickstart</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-tag">GenAI Learning Primer</div>
+      <h1>Analyse your GitHub<br/>PRs with <em>AI</em><span class="blink"></span></h1>
+      <p class="hero-sub">
+        A hands-on POC that fetches pull request data from your GitHub repos,
+        summarises it with pandas, sends it to an LLM, and delivers an
+        AI-written engineering report straight to your inbox.
+      </p>
+      <div class="hero-badges">
+        <span class="badge">Python 3.9+</span>
+        <span class="badge">PyGithub</span>
+        <span class="badge">pandas</span>
+        <span class="badge hi">Claude API</span>
+        <span class="badge">Streamlit</span>
+        <span class="badge">smtplib</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT YOU BUILD -->
+  <section class="section" id="what-you-build">
+    <div class="container">
+      <div class="section-label">// what you build</div>
+      <h2>Four scripts.<br/>One complete pipeline.</h2>
+      <p>Each script teaches you a distinct layer of a GenAI application — from data collection to AI reasoning to delivery.</p>
+
+      <div class="flow">
+
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-num">01</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <span class="step-file">01_collect_github_data.py</span>
+            <div class="step-title">GitHub Data Collector</div>
+            <div class="step-desc">
+              Connects to the GitHub API using PyGithub and fetches PR metadata
+              across your repos — title, state, CI check results, review comments,
+              time open, author. Saves everything to <code>pr_data.csv</code>.
+            </div>
+            <div class="step-learns">
+              <span class="learn-tag">REST APIs</span>
+              <span class="learn-tag">PyGithub</span>
+              <span class="learn-tag">pandas CSV</span>
+              <span class="learn-tag">GitHub PAT</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-num">02</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <span class="step-file">02_analyse_with_ai.py</span>
+            <div class="step-title">AI Analyser</div>
+            <div class="step-desc">
+              Reads the CSV, aggregates it into per-repo and per-author stats using
+              pandas groupby, then builds a structured prompt and sends it to Claude
+              or OpenAI. Returns a human-readable engineering report.
+              Supports <strong>FREE MODE</strong> — paste the prompt into claude.ai manually if you have Claude Pro.
+            </div>
+            <div class="step-learns">
+              <span class="learn-tag">Prompt Engineering</span>
+              <span class="learn-tag">LLM APIs</span>
+              <span class="learn-tag">Token Cost</span>
+              <span class="learn-tag">Data Compression</span>
+              <span class="learn-tag">FREE MODE</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-num">03</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <span class="step-file">03_send_email.py</span>
+            <div class="step-title">Email Delivery</div>
+            <div class="step-desc">
+              Reads the AI report, wraps it in a styled HTML email template, and
+              sends it via Gmail SMTP. Uses Python's built-in <code>smtplib</code> —
+              no extra libraries needed. Schedule with cron to get weekly reports automatically.
+            </div>
+            <div class="step-learns">
+              <span class="learn-tag">SMTP Protocol</span>
+              <span class="learn-tag">HTML Email</span>
+              <span class="learn-tag">Gmail App Passwords</span>
+              <span class="learn-tag">cron jobs</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-num">04</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <span class="step-file">04_dashboard.py</span>
+            <div class="step-title">Streamlit Dashboard</div>
+            <div class="step-desc">
+              A dark-themed web dashboard that visualises PR health metrics with
+              Plotly charts — merge rates, CI failure rates, author patterns, PR
+              volume over time — plus the full AI report rendered inline.
+            </div>
+            <div class="step-learns">
+              <span class="learn-tag">Streamlit</span>
+              <span class="learn-tag">Plotly</span>
+              <span class="learn-tag">Data Viz</span>
+              <span class="learn-tag">Caching</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CONCEPTS -->
+  <section class="section" id="concepts">
+    <div class="container">
+      <div class="section-label">// genai concepts you learn</div>
+      <h2>What this POC<br/>actually teaches you.</h2>
+      <p>Each script is a deliberate lesson in a real-world GenAI pattern used in production systems.</p>
+
+      <div class="concepts-grid">
+        <div class="concept-card">
+          <div class="concept-icon">🪟</div>
+          <div class="concept-title">Context Windows</div>
+          <div class="concept-desc">LLMs can only read a limited amount of text at once. Learn why we summarise 500 CSV rows into a compact prompt instead of sending raw data.</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">✍️</div>
+          <div class="concept-title">Prompt Engineering</div>
+          <div class="concept-desc">The 4 ingredients of a great prompt: Role, Context, Task, Format. See exactly how prompt structure changes the quality of the AI's output.</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">🪙</div>
+          <div class="concept-title">Token Economics</div>
+          <div class="concept-desc">APIs charge per token. Learn to estimate cost before running, read usage stats from responses, and calculate exact cost in INR per run.</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">🔌</div>
+          <div class="concept-title">API Patterns</div>
+          <div class="concept-desc">The messages[] format is an industry standard. Once you know Claude's API, switching to OpenAI or Gemini is just changing 3 lines of code.</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">🗜️</div>
+          <div class="concept-title">Data-to-Prompt Compression</div>
+          <div class="concept-desc">Raw data → pandas aggregation → structured text → LLM. This pipeline pattern appears in every serious GenAI data app.</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">🆓</div>
+          <div class="concept-title">FREE MODE Pattern</div>
+          <div class="concept-desc">No API key? The script generates a ready-to-paste prompt for claude.ai. A practical pattern when prototyping before committing to API costs.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUICKSTART -->
+  <section class="section" id="quickstart">
+    <div class="container">
+      <div class="section-label">// quickstart</div>
+      <h2>Run the full pipeline<br/>in 4 commands.</h2>
+
+      <ul class="req-list">
+        <li><span class="req-dot"></span> Python 3.9 or higher installed<span class="req-cmd">python --version</span></li>
+        <li><span class="req-dot"></span> GitHub Personal Access Token (read:repo scope)<span class="req-cmd">github.com → Settings → Developer Settings</span></li>
+        <li><span class="req-dot"></span> Claude Pro account <em>or</em> Anthropic API key<span class="req-cmd">console.anthropic.com</span></li>
+        <li><span class="req-dot"></span> Gmail App Password for email delivery<span class="req-cmd">myaccount.google.com → Security</span></li>
+      </ul>
+
+      <div class="code-block" style="margin-top:2rem;">
+        <pre><span class="c"># 1. Install dependencies</span>
+<span class="k">pip install</span> <span class="s">PyGithub pandas anthropic streamlit plotly</span>
+
+<span class="c"># 2. Collect PR data from your GitHub repos</span>
+<span class="k">python</span> <span class="n">01_collect_github_data.py</span>
+
+<span class="c"># 3. Analyse with AI (FREE_MODE=True uses claude.ai)</span>
+<span class="k">python</span> <span class="n">02_analyse_with_ai.py</span>
+
+<span class="c"># 4. Email the report to your inbox</span>
+<span class="k">python</span> <span class="n">03_send_email.py</span>
+
+<span class="c"># 5. Launch the visual dashboard</span>
+<span class="k">streamlit run</span> <span class="n">04_dashboard.py</span></pre>
+      </div>
+
+      <div class="code-block">
+        <pre><span class="c"># Optional: run everything weekly with cron (every Monday 9am)</span>
+<span class="k">crontab -e</span>
+<span class="s">0 9 * * 1 cd ~/GithubAIPOC && python 01_collect_github_data.py && python 02_analyse_with_ai.py && python 03_send_email.py</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <p>Built as a GenAI learning POC &nbsp;·&nbsp; Python + Claude AI &nbsp;·&nbsp;
+      Hosted on <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
+    </div>
+  </footer>
+
+  <script>
+    // Intersection Observer — animates elements as they scroll into view
+    // This is a standard web pattern for scroll-triggered animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          // Stagger the animation delay based on element index within its parent
+          const siblings = Array.from(entry.target.parentElement.children);
+          const index = siblings.indexOf(entry.target);
+          entry.target.style.transitionDelay = `${index * 0.1}s`;
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.flow-step, .concept-card').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
